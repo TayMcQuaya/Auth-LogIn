@@ -2,7 +2,6 @@
 
 A ready-to-use Google login system that you can add to any website. Built with Next.js and styled with Tailwind CSS.
 
-![Login Preview](preview.png)
 
 ## What You Get
 - Clean, modern login page
