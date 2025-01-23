@@ -1,11 +1,22 @@
-import { getServerSession } from 'next-auth/next'
 import { redirect } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useEffect } from 'react'
 
-export default async function HomePage() {
-  const session = await getServerSession()
+export default function HomePage() {
+  const { data: session, status } = useSession()
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.href = '/auth/signin'
+    }
+  }, [status])
+
+  if (status === 'loading') {
+    return <div>Loading...</div>
+  }
 
   if (!session) {
-    redirect('/auth/signin')
+    return null
   }
 
   return (
