@@ -1,6 +1,5 @@
 import { Inter } from 'next/font/google'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from './api/auth/[...nextauth]/route'
 import SessionProvider from '../components/SessionProvider'
 import '../styles/globals.css'
 
@@ -11,7 +10,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
 
   return (
     <html lang="en">

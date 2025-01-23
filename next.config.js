@@ -2,9 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
-  images: {
-    unoptimized: true,
-  },
   basePath: '/Auth-LogIn',
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
