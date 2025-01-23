@@ -205,6 +205,41 @@ if (!isLoggedIn()) {
 </div>
 ```
 
+## Deployment Guide
+
+### 1. Deploy to Vercel (Recommended)
+1. Go to [vercel.com](https://vercel.com)
+2. Sign up with your GitHub account
+3. Click "Import Project"
+4. Select your repository
+5. Add these Environment Variables in Vercel:
+   ```
+   NEXTAUTH_URL=https://your-vercel-url.vercel.app
+   NEXTAUTH_SECRET=[Your existing secret]
+   GOOGLE_ID=[Your Google Client ID]
+   GOOGLE_SECRET=[Your Google Client Secret]
+   ```
+6. Click Deploy
+
+### 2. Update Google OAuth Settings
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Navigate to "APIs & Services" > "Credentials"
+3. Edit your OAuth 2.0 Client
+4. Add Authorized redirect URI:
+   ```
+   https://your-vercel-url.vercel.app/api/auth/callback/google
+   ```
+5. Add Authorized JavaScript origins:
+   ```
+   https://your-vercel-url.vercel.app
+   ```
+
+### 3. Test Your Live Site
+1. Visit your Vercel URL
+2. Try signing in with Google
+3. Test protected routes
+4. Verify session management
+
 ## Need Help?
 - Create an issue in this repository
 - Email: support@example.com
