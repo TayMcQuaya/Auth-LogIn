@@ -2,7 +2,6 @@
 
 A ready-to-use Google login system that you can add to any website. Built with Next.js and styled with Tailwind CSS.
 
-![Login Preview](preview.png)
 
 ## What You Get
 - Clean, modern login page
@@ -213,4 +212,7 @@ if (!isLoggedIn()) {
 ## Security Notes
 - Always use HTTPS in production
 - Keep your credentials secure
+- Never commit .env files
+- Update dependencies regularly 
+
 - Never share your .env.local file 
