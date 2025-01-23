@@ -1,253 +1,144 @@
-# Simple Google Login Module
+# Google Authentication Template
 
-A ready-to-use Google login system that you can add to any website. Built with Next.js and styled with Tailwind CSS.
+A modern, ready-to-use authentication template using Google Sign-In. Built with Next.js and Firebase.
 
+![Demo Screenshot](public/screenshot.png)
 
-## What You Get
-- Clean, modern login page
-- Secure Google authentication
-- User session management
-- Protected routes
-- Mobile-friendly design
+## 🚀 Quick Start
 
-## Quick Start (5 minutes)
+### Option 1: Use as a Template (Recommended for Beginners)
 
-### 1. Get Google Credentials
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create a new project
-3. Go to "APIs & Services" > "Credentials"
-4. Click "Create Credentials" > "OAuth client ID"
-5. Add this redirect URI: `http://your-website.com/api/auth/callback/google`
-6. Copy your Client ID and Client Secret
-
-### 2. Add to Your Website
-
-#### Option A: For Next.js Projects
-1. Copy these folders to your project:
-   ```
-   app/api/auth/     (handles authentication)
-   app/auth/         (login page)
-   components/       (session management)
-   ```
-
-2. Install required packages:
+1. Click "Use this template" on GitHub
+2. Clone your new repository
+3. Install dependencies:
    ```bash
-   npm install next-auth@latest
+   npm install
    ```
 
-3. Add environment variables to `.env.local`:
-   ```env
-   NEXTAUTH_URL=http://your-website.com
-   NEXTAUTH_SECRET=your-random-secret-key
-   GOOGLE_ID=your-google-client-id
-   GOOGLE_SECRET=your-google-client-secret
+### Option 2: Add to Existing Project
+
+1. Install required packages:
+   ```bash
+   npm install firebase
    ```
 
-#### Option B: For Any Other Website
-1. Create a new Next.js API route in your server:
+2. Copy these files to your project:
+   - `lib/firebase.ts` - Firebase configuration
+   - `app/auth/signin/page.tsx` - Sign-in page
+   - `app/page.tsx` - Protected home page
+
+## 🔧 Setup
+
+1. Create a Firebase project:
+   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Click "Add Project"
+   - Follow the setup wizard
+
+2. Enable Google Authentication:
+   - In Firebase Console, go to "Authentication" → "Sign-in method"
+   - Enable "Google" provider
+   - Add your domain to "Authorized domains"
+
+3. Get Firebase Config:
+   - In Firebase Console, click ⚙️ (Project Settings)
+   - Under "Your apps", click web icon (</>)
+   - Register app and copy the config
+
+4. Add Environment Variables:
+   Create `.env.local` with your Firebase config:
    ```
-   /api/auth/*
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
    ```
 
-2. Add login button to your HTML:
-   ```html
-   <a href="/auth/signin" class="login-button">
-     Sign in with Google
-   </a>
+## 🔒 Using Authentication in Your Code
+
+### React/Next.js Projects
+
+1. Check if user is logged in:
+   ```typescript
+   import { auth } from '../lib/firebase'
+   
+   // In your component
+   const [user, setUser] = useState(null)
+   
+   useEffect(() => {
+     auth.onAuthStateChanged((user) => {
+       setUser(user)
+     })
+   }, [])
    ```
 
-3. Check login status:
-   ```javascript
-   // Frontend
-   async function checkLogin() {
-     const res = await fetch('/api/auth/session');
-     const session = await res.json();
-     if (session.user) {
-       // User is logged in
-       console.log(session.user.email);
-     }
+2. Sign in user:
+   ```typescript
+   import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+   import { auth } from '../lib/firebase'
+   
+   const signIn = async () => {
+     const provider = new GoogleAuthProvider()
+     await signInWithPopup(auth, provider)
    }
    ```
 
-### 3. Protect Your Content
-```javascript
-// Check if user is logged in
-const session = await fetch('/api/auth/session').then(r => r.json());
-if (!session.user) {
-  // Redirect to login
-  window.location.href = '/auth/signin';
-}
-```
-
-## Features You Can Add
-- Custom login page design
-- Additional OAuth providers (Microsoft, GitHub, etc.)
-- User profile pages
-- Role-based access control
-
-## Integration Guide for Regular Websites (HTML, PHP, etc.)
-
-### Step 1: Set Up the Authentication Server
-1. Create a new folder called `auth-server`
-2. Copy these files into it:
-   ```
-   app/api/auth/     (handles login)
-   .env.local        (credentials)
-   package.json      (dependencies)
-   ```
-3. Install Node.js from [nodejs.org](https://nodejs.org)
-4. Open terminal in the `auth-server` folder and run:
-   ```bash
-   npm install
-   npm run dev
-   ```
-   This starts your authentication server on `http://localhost:3000`
-
-### Step 2: Add Login to Your Website
-Add this button to your HTML where you want the login to appear:
-```html
-<!-- Example: Add to your index.html -->
-<button onclick="loginWithGoogle()" class="login-button">
-  Sign in with Google
-</button>
-
-<!-- Add this script to your page -->
-<script>
-  // Function to handle login
-  function loginWithGoogle() {
-    window.location.href = 'http://localhost:3000/auth/signin';
-  }
-
-  // Function to check if user is logged in
-  async function checkLoginStatus() {
-    const response = await fetch('http://localhost:3000/api/auth/session');
-    const data = await response.json();
-    
-    if (data.user) {
-      // User is logged in
-      document.getElementById('user-info').innerHTML = `
-        Welcome, ${data.user.email}!
-        <button onclick="logout()">Logout</button>
-      `;
-    } else {
-      // User is not logged in
-      document.getElementById('user-info').innerHTML = `
-        <button onclick="loginWithGoogle()">Login with Google</button>
-      `;
-    }
-  }
-
-  // Function to handle logout
-  async function logout() {
-    window.location.href = 'http://localhost:3000/api/auth/signout';
-  }
-
-  // Check login status when page loads
-  checkLoginStatus();
-</script>
-```
-
-### Step 3: Protect Your Content
-Add this to pages that need login:
-```html
-<div id="protected-content" style="display: none;">
-  Your protected content here
-</div>
-
-<script>
-  // Check if user can view this page
-  async function checkAccess() {
-    const response = await fetch('http://localhost:3000/api/auth/session');
-    const data = await response.json();
-    
-    if (data.user) {
-      // Show content if logged in
-      document.getElementById('protected-content').style.display = 'block';
-    } else {
-      // Redirect to login if not logged in
-      window.location.href = 'http://localhost:3000/auth/signin';
-    }
-  }
-
-  checkAccess();
-</script>
-```
-
-### Step 4: Going Live
-When ready to go live:
-1. Deploy the auth-server to a hosting service (like Vercel or Heroku)
-2. Update the URLs in your code from `http://localhost:3000` to your live server URL
-3. Update Google OAuth credentials with your live server URL
-
-### Example: PHP Website Integration
-```php
-<?php
-// At the top of your protected pages
-session_start();
-
-// Function to check if user is logged in
-function isLoggedIn() {
-    $response = file_get_contents('http://localhost:3000/api/auth/session');
-    $data = json_decode($response, true);
-    return isset($data['user']);
-}
-
-// Protect your page
-if (!isLoggedIn()) {
-    header('Location: http://localhost:3000/auth/signin');
-    exit();
-}
-?>
-
-<!-- Your protected HTML content -->
-<div>
-    Welcome to protected page!
-</div>
-```
-
-## Deployment Guide
-
-### 1. Deploy to Vercel (Recommended)
-1. Go to [vercel.com](https://vercel.com)
-2. Sign up with your GitHub account
-3. Click "Import Project"
-4. Select your repository
-5. Add these Environment Variables in Vercel:
-   ```
-   NEXTAUTH_URL=https://your-vercel-url.vercel.app
-   NEXTAUTH_SECRET=[Your existing secret]
-   GOOGLE_ID=[Your Google Client ID]
-   GOOGLE_SECRET=[Your Google Client Secret]
-   ```
-6. Click Deploy
-
-### 2. Update Google OAuth Settings
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Navigate to "APIs & Services" > "Credentials"
-3. Edit your OAuth 2.0 Client
-4. Add Authorized redirect URI:
-   ```
-   https://your-vercel-url.vercel.app/api/auth/callback/google
-   ```
-5. Add Authorized JavaScript origins:
-   ```
-   https://your-vercel-url.vercel.app
+3. Sign out user:
+   ```typescript
+   import { signOut } from 'firebase/auth'
+   import { auth } from '../lib/firebase'
+   
+   const signOut = async () => {
+     await signOut(auth)
+   }
    ```
 
-### 3. Test Your Live Site
-1. Visit your Vercel URL
-2. Try signing in with Google
-3. Test protected routes
-4. Verify session management
+### Non-React Projects
 
-## Need Help?
-- Create an issue in this repository
-- Email: support@example.com
+1. Add Firebase to your HTML:
+   ```html
+   <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-app.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-auth.js"></script>
+   ```
 
-## Security Notes
-- Always use HTTPS in production
-- Keep your credentials secure
-- Never commit .env files
-- Update dependencies regularly 
+2. Initialize Firebase:
+   ```html
+   <script>
+   const firebaseConfig = {
+     // Your Firebase config
+   }
+   firebase.initializeApp(firebaseConfig)
+   </script>
+   ```
 
-- Never share your .env.local file 
+3. Add Sign-in Button:
+   ```html
+   <button onclick="signIn()">Sign in with Google</button>
+   
+   <script>
+   function signIn() {
+     const provider = new firebase.auth.GoogleAuthProvider()
+     firebase.auth().signInWithPopup(provider)
+   }
+   </script>
+   ```
+
+## 📱 Features
+
+- 🔐 Secure Google Authentication
+- 🎨 Modern UI with Tailwind CSS
+- 📱 Responsive Design
+- ⚡ Fast Page Loads
+- 🔄 Automatic Redirects
+- 👤 User Profile Display
+
+## 🤝 Need Help?
+
+1. Check [Firebase Authentication Docs](https://firebase.google.com/docs/auth)
+2. Open an issue in this repository
+3. Join [Firebase Community](https://firebase.google.com/community)
+
+## 📄 License
+
+MIT License - feel free to use in your projects! 
